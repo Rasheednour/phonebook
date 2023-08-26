@@ -55,10 +55,25 @@ app.delete("/api/persons/:id", (request, response) => {
 });
 
 app.post("/api/persons", (request, response) => {
-  let person = request.body;
-  person.id = Math.floor(Math.random() * 1000000);
-  persons = persons.concat(person);
-  response.json(person);
+  let entry = request.body;
+
+  if (!entry.name) {
+    return response.status(400).json({ error: "name is missing" });
+  }
+
+  if (!entry.number) {
+    return response.status(400).json({ error: "number is missing" });
+  }
+
+  const duplicate = persons.find((person) => person.name === entry.name);
+
+  if (duplicate) {
+    return response.status(400).json({ error: "name must be unique" });
+  }
+
+  entry.id = Math.floor(Math.random() * 1000000);
+  persons = persons.concat(entry);
+  response.json(entry);
 });
 
 const PORT = 3001;
