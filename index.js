@@ -83,15 +83,20 @@ app.post("/api/persons", (request, response) => {
     return response.status(400).json({ error: "number is missing" });
   }
 
-  const duplicate = persons.find((person) => person.name === entry.name);
+  const person = new Person ({
+    name: entry.name,
+    number: entry.number,
+  })
 
-  if (duplicate) {
-    return response.status(400).json({ error: "name must be unique" });
-  }
+  person.save().then(savedPerson => {
+    response.json(savedPerson);
+  })
 
-  entry.id = Math.floor(Math.random() * 1000000);
-  persons = persons.concat(entry);
-  response.json(entry);
+  // const duplicate = persons.find((person) => person.name === entry.name);
+
+  // if (duplicate) {
+  //   return response.status(400).json({ error: "name must be unique" });
+  // }
 });
 
 const PORT = process.env.PORT;
