@@ -47,7 +47,7 @@ app.get("/", (request, response) => {
 app.get("/api/persons", (request, response) => {
   Person.find({}).then(persons => {
     response.json(persons);
-  })
+  }).catch(error => next(error))
 });
 
 app.get("/info", (request, response) => {
@@ -71,7 +71,7 @@ app.delete("/api/persons/:id", (request, response) => {
   .then(result => {
     response.status(204).end()
   })
-  .catch(error => console.log(error))
+  .catch(error => next(error))
 });
 
 app.post("/api/persons", (request, response) => {
@@ -92,7 +92,7 @@ app.post("/api/persons", (request, response) => {
 
   person.save().then(savedPerson => {
     response.json(savedPerson);
-  })
+  }).catch(error => next(error))
 
   // const duplicate = persons.find((person) => person.name === entry.name);
 
@@ -100,6 +100,19 @@ app.post("/api/persons", (request, response) => {
   //   return response.status(400).json({ error: "name must be unique" });
   // }
 });
+
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({error: 'unknown endpoint'})
+}
+
+app.use(unknownEndpoint)
+
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message)
+  next(error)
+}
+
+app.use(errorHandler)
 
 const PORT = process.env.PORT;
 app.listen(PORT);
