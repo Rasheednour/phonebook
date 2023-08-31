@@ -93,14 +93,20 @@ app.post("/api/persons", (request, response, next) => {
   person.save().then(savedPerson => {
     response.json(savedPerson);
   }).catch(error => next(error))
-
-  // const duplicate = persons.find((person) => person.name === entry.name);
-
-  // if (duplicate) {
-  //   return response.status(400).json({ error: "name must be unique" });
-  // }
 });
 
+app.put("/api/persons/:id", (request, response, next) => {
+  const id = request.params.id
+  const person = {
+    name: request.body.name,
+    number: request.body.number,
+  }
+  Person.findByIdAndUpdate(id, person, {new: true})
+  .then(updatedPerson => {
+    response.json(updatedPerson)
+  })
+  .catch(error => next(error))
+})
 
 const unknownEndpoint = (request, response) => {
   response.status(404).send({error: 'unknown endpoint'})
